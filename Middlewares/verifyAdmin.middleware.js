@@ -18,4 +18,4 @@ const verifyAdminMiddleware = async (req, res, next) => {
 };
 
 // Export
-module.export = verifyAdminMiddleware;
+export default verifyAdminMiddleware;
