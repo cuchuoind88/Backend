@@ -57,4 +57,76 @@ const courseCreate = async (req, res) => {
     });
   }
 };
-export { courseCreate, courseDetail, courseViewAll };
+//Course enrollment
+const courseEnroll = async (req, res) => {
+  try {
+    const existCourse = await courseModel.findOne({ _id: req.params.courseID });
+    if (existCourse) {
+      await courseModel.updateMany(
+        { _id: req.params.courseID },
+        {
+          $push: { enrolledStudent: req.userID },
+          $set: { enrolledCount: existCourse.enrolledCount + 1 },
+        }
+      );
+      await userModel.updateOne(
+        { _id: req.userID, role: "student" },
+        {
+          $push: {
+            enrolledCourse: existCourse._id,
+          },
+        }
+      );
+      res.status(200).json({
+        msg: "Successfully Enrolled A Course",
+      });
+    } else {
+      res.status(400).json({
+        msg: "Course Not Found",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "Server Error",
+    });
+  }
+};
+// View Enrolled Course
+const courseViewEnrolled = async (req, res) => {
+  try {
+    const existCourse = await courseModel
+      .findOne({ _id: req.params.courseID })
+      .populate({
+        path: "chapters",
+        populate: {
+          path: "lessons",
+          model: "lessonModel",
+        },
+      });
+    if (existCourse) {
+      // console.log("Watching")
+      res.status(200).json({
+        result: existCourse,
+        msg: "You are watching enrolled course",
+      });
+    } else {
+      res.status(400).json({
+        msg: "Course Not Found",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "Server Error",
+    });
+  }
+};
+
+export {
+  courseCreate,
+  courseDetail,
+  courseViewAll,
+  courseEnroll,
+  courseViewEnrolled,
+};
