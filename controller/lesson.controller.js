@@ -42,6 +42,42 @@ const lessonUpdate = async (req, res) => {
     });
   }
 };
+//Lesson Update Tracking
+const lessonTracking = async (req, res) => {
+  try {
+    const existLesson = lessonModel.exists({ _id: req.params.lessonID });
+    if (existLesson) {
+      if (existLesson.completed) {
+        if (!existLesson.completed.includes(req.userID)) {
+          await lessonModel.updateOne(
+            { _id: req.params.lessonID },
+            { $push: { completed: req.userID } }
+          );
+          res.status(200).json({
+            msg: "Successfully Updated Tracking",
+          });
+        }
+      } else {
+        await lessonModel.updateOne(
+          { _id: req.params.lessonID },
+          { $push: { completed: req.userID } }
+        );
+        res.status(200).json({
+          msg: "Successfully Updated Tracking",
+        });
+      }
+    } else {
+      res.status(400).json({
+        msg: "Lesson Not Found",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "Server Error",
+    });
+  }
+};
 // Lesson Delete
 const lessonDelete = async (req, res) => {
   try {
@@ -64,4 +100,4 @@ const lessonDelete = async (req, res) => {
   }
 };
 
-export { lessonCreate, lessonUpdate, lessonDelete };
+export { lessonCreate, lessonUpdate, lessonDelete, lessonTracking };

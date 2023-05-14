@@ -62,21 +62,23 @@ const courseEnroll = async (req, res) => {
   try {
     const existCourse = await courseModel.findOne({ _id: req.params.courseID });
     if (existCourse) {
-      await courseModel.updateMany(
-        { _id: req.params.courseID },
-        {
-          $push: { enrolledStudent: req.userID },
-          $set: { enrolledCount: existCourse.enrolledCount + 1 },
-        }
-      );
-      await userModel.updateOne(
-        { _id: req.userID, role: "student" },
-        {
-          $push: {
-            enrolledCourse: existCourse._id,
-          },
-        }
-      );
+      if (existCourse.enrolledStudent.indexOf(req.userID) == -1) {
+        await courseModel.updateMany(
+          { _id: req.params.courseID },
+          {
+            $push: { enrolledStudent: req.userID },
+            $set: { enrolledCount: existCourse.enrolledCount + 1 },
+          }
+        );
+        await userModel.updateOne(
+          { _id: req.userID, role: "student" },
+          {
+            $push: {
+              enrolledCourse: existCourse._id,
+            },
+          }
+        );
+      }
       res.status(200).json({
         msg: "Successfully Enrolled A Course",
       });

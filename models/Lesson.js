@@ -22,6 +22,12 @@ const lessonSchema = mongoose.Schema({
     ref: "chapterModel",
     required: true,
   },
+  completed: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "userModel",
+    },
+  ],
 });
 const lessonModel = mongoose.model("lessonModel", lessonSchema);
 export default lessonModel;
