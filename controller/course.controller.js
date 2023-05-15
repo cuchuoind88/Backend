@@ -1,8 +1,31 @@
 import courseModel from "../models/Course.js";
 import userModel from "../models/User.js";
+const courseSearch = async (req, res) => {
+  try {
+    const searchQuery = req.query.q;
+    console.log(searchQuery);
+    const searchQueryRegex = searchQuery
+      .split(" ")
+      .map((term) => `${term.trim()}.*`)
+      .join("|");
+    const courses = await courseModel.find({
+      $or: [{ title: { $regex: searchQueryRegex, $options: "i" } }],
+    });
+    res.status(200).json({
+      result: courses,
+      msg: "Successfully Search Course",
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "Server Error",
+    });
+  }
+};
 const courseViewAll = async (req, res) => {
   try {
     const existCourse = await courseModel.find();
+
     if (existCourse) {
       res.status(200).json({
         result: existCourse,
@@ -131,4 +154,5 @@ export {
   courseViewAll,
   courseEnroll,
   courseViewEnrolled,
+  courseSearch,
 };
