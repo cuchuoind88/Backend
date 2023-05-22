@@ -127,6 +127,16 @@ const courseViewEnrolled = async (req, res) => {
         populate: {
           path: "lessons",
           model: "lessonModel",
+          // populate: {
+          //   // path: "comments",
+          //   // // model: "commentModel",
+          //   // // select: "content author",
+          //   // populate: {
+          //   //   path: "author",
+          //   //   model: "userModel",
+          //   //   select: "username",
+          //   // },
+          // },
         },
       });
     if (existCourse) {

@@ -6,7 +6,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 import courseRouter from "./routes/course.route.js";
 import chapterRoute from "./routes/chapter.route.js";
+import { Server } from "socket.io";
 import lessonRoute from "./routes/lesson.route.js";
+import * as http from "http";
+import commentRoute from "./routes/comments.route.js";
 dotenv.config();
 const connect = mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
@@ -20,6 +23,35 @@ app.use("/student", studentRoute);
 app.use("/course", courseRouter);
 app.use("/chapter", chapterRoute);
 app.use("/lesson", lessonRoute);
-app.listen(2002, () => {
+app.use("/comments", commentRoute);
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+io.on("connection", (socket) => {
+  console.log(`User connected ${socket.id}`);
+  socket.on("join_room", (data) => {
+    const { username, lesson, avatar } = data; // Data sent from client when join_room event emitted
+    console.log(username);
+    console.log(lesson);
+    socket.join(lesson); // Join the user to a socket room
+    socket.on("send_message", (message) => {
+      io.to(lesson).emit("receive_message", {
+        content: `${message.message}`,
+        author: {
+          avatar: avatar,
+          username: username,
+        },
+      });
+    });
+  });
+  socket.on("leave_room", (lesson) => {
+    socket.leave(lesson);
+  });
+});
+server.listen(2002, () => {
   console.log("Server is running..... :)))");
 });

@@ -26,6 +26,20 @@ const lessonSchema = mongoose.Schema({
     {
       type: mongoose.Types.ObjectId,
       ref: "userModel",
+      default: [],
+    },
+  ],
+  unlock: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "userModel",
+      default: [],
+    },
+  ],
+  comments: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "commentModel",
     },
   ],
 });

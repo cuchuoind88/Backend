@@ -22,6 +22,11 @@ const userSchema = mongoose.Schema({
     type: String,
     enum: ["admin", "student"],
   },
+  avatar: {
+    type: String,
+    default:
+      "https://demos.creative-tim.com/black-dashboard-react/static/media/anime3.4438e506.png",
+  },
   enrolledCourse: [
     {
       type: mongoose.Types.ObjectId,
