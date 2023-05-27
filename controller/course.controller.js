@@ -1,5 +1,11 @@
 import courseModel from "../models/Course.js";
 import userModel from "../models/User.js";
+import axios from "axios";
+import CryptoJS from "crypto-js";
+import moment from "moment/moment.js";
+import { v1 } from "uuid";
+import dotenv from "dotenv";
+dotenv.config();
 const courseSearch = async (req, res) => {
   try {
     const searchQuery = req.query.q;
@@ -46,7 +52,7 @@ const courseViewAll = async (req, res) => {
 //Course Detail
 const courseDetail = async (req, res) => {
   try {
-    const existCourse = await courseModel.findById(req.params.courseId);
+    const existCourse = await courseModel.findOne({ _id: req.params.courseId });
     if (existCourse) {
       await courseModel.updateOne(
         { _id: req.params.courseID },
@@ -83,9 +89,72 @@ const courseCreate = async (req, res) => {
 //Course enrollment
 const courseEnroll = async (req, res) => {
   try {
+    //zalo pay
+    const embed_data = {
+      redirecturl: "https://5cc7-116-110-40-85.ngrok-free.app",
+    };
+    const items = [{}];
+    const transID = Math.floor(Math.random() * 1000000);
+    const order = {
+      app_id: process.env.APP_ID,
+      app_trans_id: `${moment().format("YYMMDD")}_${transID}`, // mã giao dich có định dạng yyMMdd_xxxx
+      app_user: req.username,
+      app_time: Date.now(), // miliseconds
+      item: JSON.stringify(items),
+      embed_data: JSON.stringify(embed_data),
+      amount: req.body.price,
+      description: `Thanh toan khoa hoc ${req.body.courseName}`,
+      bank_code: "",
+    };
+    const data =
+      process.env.APP_ID +
+      "|" +
+      order.app_trans_id +
+      "|" +
+      order.app_user +
+      "|" +
+      order.amount +
+      "|" +
+      order.app_time +
+      "|" +
+      order.embed_data +
+      "|" +
+      order.item;
+    order.mac = CryptoJS.HmacSHA256(data, process.env.APP_KEY1).toString();
+    var orderURL;
+    // let reqtime = Date.now();
+    // let params = {
+    //   appid: process.env.APP_ID,
+    //   reqtime: reqtime, // miliseconds
+    //   mac: CryptoJS.HmacSHA256(
+    //     process.env.APP_ID + "|" + reqtime,
+    //     process.env.APP_KEY1
+    //   ).toString(), // appid|reqtime
+    // };
+    // axios
+    //   .get("https://sbgateway.zalopay.vn/api/getlistmerchantbanks", { params })
+    //   .then((res) => {
+    //     let banks = res.data.banks;
+    //     for (let id in banks) {
+    //       let banklist = banks[id];
+    //       console.log(id + ".");
+    //       for (let bank of banklist) {
+    //         console.log(bank);
+    //       }
+    //     }
+    //   })
+    //   .catch((err) => console.error(err));
     const existCourse = await courseModel.findOne({ _id: req.params.courseID });
     if (existCourse) {
       if (existCourse.enrolledStudent.indexOf(req.userID) == -1) {
+        console.log(existCourse.enrolledStudent.indexOf(req.userID));
+        console.log(order);
+        await axios
+          .post(process.env.ZALO_ENDPOINT, null, { params: order })
+          .then((res) => {
+            console.log(res.data);
+            orderURL = res.data.order_url;
+          });
         await courseModel.updateMany(
           { _id: req.params.courseID },
           {
@@ -102,8 +171,10 @@ const courseEnroll = async (req, res) => {
           }
         );
       }
+      console.log(orderURL);
       res.status(200).json({
         msg: "Successfully Enrolled A Course",
+        url: orderURL,
       });
     } else {
       res.status(400).json({
