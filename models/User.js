@@ -7,6 +7,15 @@ const userSchema = mongoose.Schema({
     dropDups: true,
     index: true,
   },
+  verifyCode: {
+    type: String,
+    default: "",
+    expires: 3600,
+  },
+  isVerified: {
+    type: Boolean,
+    default: "false",
+  },
   email: {
     type: String,
     required: true,
