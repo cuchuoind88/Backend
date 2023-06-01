@@ -10,6 +10,7 @@ import { Server } from "socket.io";
 import lessonRoute from "./routes/lesson.route.js";
 import * as http from "http";
 import commentRoute from "./routes/comments.route.js";
+import callbackRoute from "./routes/callback.route.js";
 dotenv.config();
 const connect = mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
@@ -24,6 +25,7 @@ app.use("/course", courseRouter);
 app.use("/chapter", chapterRoute);
 app.use("/lesson", lessonRoute);
 app.use("/comments", commentRoute);
+app.use("/zalo", callbackRoute);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
