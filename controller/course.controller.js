@@ -31,7 +31,6 @@ const courseSearch = async (req, res) => {
 const courseViewAll = async (req, res) => {
   try {
     const existCourse = await courseModel.find();
-
     if (existCourse) {
       res.status(200).json({
         result: existCourse,
@@ -78,6 +77,7 @@ const courseCreate = async (req, res) => {
     await newCourse.save();
     res.status(200).json({
       msg: "Successfully Created A Course",
+      courseId: newCourse._id,
     });
   } catch (err) {
     console.log(err);
@@ -230,6 +230,51 @@ const courseViewEnrolled = async (req, res) => {
     });
   }
 };
+// Course Update
+const courseUpdate = async (req, res) => {
+  try {
+    const existCourse = courseModel.findOne({ _id: req.params.courseID });
+    if (existCourse) {
+      await courseModel.updateOne(
+        { _id: req.params.courseID },
+        { $set: { ...req.body, updated_at: Date.now() } }
+      );
+      res.status(200).json({
+        msg: "Successfully Updated A Course",
+      });
+    } else {
+      res.status(400).json({
+        msg: "Course Not Found",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "Server Error",
+    });
+  }
+};
+// Course Delete
+const courseDelete = async (req, res) => {
+  try {
+    const existCourse = courseModel.findOne({ _id: req.params.courseID });
+    if (existCourse) {
+      await courseModel.deleteOne({ _id: req.params.courseID });
+      res.status(200).json({
+        msg: "Successfully Deleted A Course",
+      });
+    } else {
+      res.status(400).json({
+        msg: "Course Not Found",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "Server Error",
+    });
+  }
+};
 
 export {
   courseCreate,
@@ -238,4 +283,5 @@ export {
   courseEnroll,
   courseViewEnrolled,
   courseSearch,
+  courseUpdate,
 };

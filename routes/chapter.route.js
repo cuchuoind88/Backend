@@ -9,7 +9,7 @@ import {
 import express from "express";
 const chapterRoute = express.Router();
 // Chapter View Individual
-chapterRoute.get("/view/:courseID/:chapterID", chapterViewIndividual);
+chapterRoute.get("/view/:chapterID", chapterViewIndividual);
 // Chapter Create
 chapterRoute.post("/create", verifyAdminMiddleware, chapterCreate);
 // Chapter Update

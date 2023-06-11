@@ -7,6 +7,7 @@ const chapterViewIndividual = async (req, res) => {
       _id: req.params.chapterID,
     });
     if (existChapter) {
+      console.log(existChapter);
       res.status(200).json({
         result: existChapter,
         msg: "Successfully Watched A Chapter",
@@ -34,6 +35,7 @@ const chapterCreate = async (req, res) => {
     );
     res.status(200).json({
       msg: "Successfully Created A Chapter",
+      chapter: newChapter,
     });
   } catch (err) {
     console.log(err);
@@ -45,14 +47,21 @@ const chapterCreate = async (req, res) => {
 // Chapter Update
 const chapterUpdate = async (req, res) => {
   try {
-    const existChapter = chapterModel.findOne({ _id: req.params.chapterID });
+    const existChapter = await chapterModel.findOne({
+      _id: req.params.chapterID,
+    });
     if (existChapter) {
+      console.log(existChapter);
       await chapterModel.updateOne(
         { _id: req.params.chapterID },
         { $set: { ...req.body, updated_at: Date.now() } }
       );
+      const newChapter = await chapterModel.findOne({
+        _id: req.params.chapterID,
+      });
       res.status(200).json({
         msg: "Successfully Updated A Chapter",
+        newChapter: newChapter,
       });
     } else {
       res.status(400).json({

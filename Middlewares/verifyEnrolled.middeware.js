@@ -2,7 +2,8 @@ import userModel from "../models/User.js";
 // Middleware
 const verifyEnrolledMiddelware = async (req, res, next) => {
   try {
-    if (res.userRole != "admin") {
+    if (req.userRole !== "admin") {
+      console.log(res.userRole);
       const studentEnrolledCourse = await userModel
         .find({ _id: req.userID })
         .select("enrolledCourse");

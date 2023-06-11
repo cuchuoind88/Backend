@@ -10,6 +10,7 @@ const lessonCreate = async (req, res) => {
     );
     res.status(200).json({
       msg: "Successfully Created A Lesson",
+      lesson: newLesson,
     });
   } catch (err) {
     console.log(err);

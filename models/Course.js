@@ -51,6 +51,10 @@ const courseSchema = mongoose.Schema({
       ref: "chapterModel",
     },
   ],
+  status: {
+    type: String,
+    default: "active",
+  },
 });
 const courseModel = mongoose.model("courseModel", courseSchema);
 export default courseModel;

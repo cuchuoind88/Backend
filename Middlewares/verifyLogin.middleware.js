@@ -7,7 +7,7 @@ const verifyLoginMiddleware = async (req, res, next) => {
     req.username = decoded.userName;
     req.userID = decoded.userID;
     req.userRole = decoded.userRole;
-    console.log(req.userID);
+    console.log(req.userRole);
     next();
   } catch (err) {
     res.status(401).send("Failed To Verify Login");

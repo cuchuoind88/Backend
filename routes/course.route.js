@@ -9,6 +9,7 @@ import {
   courseEnroll,
   courseViewEnrolled,
   courseSearch,
+  courseUpdate,
 } from "../controller/course.controller.js";
 const courseRouter = express.Router();
 courseRouter.get("/view/:courseId", verifyLoginMiddleware, courseDetail);
@@ -22,4 +23,5 @@ courseRouter.get(
 courseRouter.get("/viewall", verifyLoginMiddleware, courseViewAll);
 courseRouter.post("/create-course", verifyAdminMiddleware, courseCreate);
 courseRouter.get("/api/search", verifyLoginMiddleware, courseSearch);
+courseRouter.put("/update/:courseID", verifyAdminMiddleware, courseUpdate);
 export default courseRouter;
