@@ -1,4 +1,4 @@
-import userModel from "../models/User";
+import userModel from "../models/User.js";
 //Admin view user
 const ViewAllUser = async (req, res) => {
   try {
@@ -20,7 +20,9 @@ const ViewAllUser = async (req, res) => {
 const userView = async (req, res) => {
   try {
     const { username } = req.params;
-    const existUser = await userModel.findOne({ username: username });
+    const existUser = await userModel.findOne({ username: username }).populate({
+      path: "enrolledCourse",
+    });
     if (existUser) {
       let sendableUser = existUser;
       sendableUser.password = "";

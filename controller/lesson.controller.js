@@ -2,16 +2,18 @@ import lessonModel from "../models/Lesson.js";
 import chapterModel from "../models/Chapter.js";
 const lessonCreate = async (req, res) => {
   try {
-    const newLesson = new lessonModel(req.body);
-    await newLesson.save();
-    await chapterModel.updateOne(
-      { _id: newLesson.chapter },
-      { $push: { lessons: newLesson._id } }
-    );
-    res.status(200).json({
-      msg: "Successfully Created A Lesson",
-      lesson: newLesson,
-    });
+    // const newLesson = new lessonModel(req.body);
+    // await newLesson.save();
+    // await chapterModel.updateOne(
+    //   { _id: newLesson.chapter },
+    //   { $push: { lessons: newLesson._id } }
+    // );
+    // res.status(200).json({
+    //   msg: "Successfully Created A Lesson",
+    //   lesson: newLesson,
+    // });
+    console.log(req.file);
+    console.log(req.body);
   } catch (err) {
     console.log(err);
     res.status(500).json({

@@ -11,6 +11,8 @@ import lessonRoute from "./routes/lesson.route.js";
 import * as http from "http";
 import commentRoute from "./routes/comments.route.js";
 import callbackRoute from "./routes/callback.route.js";
+import userRoute from "./routes/user.route.js";
+import bodyParser from "body-parser";
 dotenv.config();
 const connect = mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
@@ -20,7 +22,13 @@ connect.then((db) => {
 });
 app.use(cors());
 app.use(express.json());
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+  })
+);
 app.use("/student", studentRoute);
+app.use("/user", userRoute);
 app.use("/course", courseRouter);
 app.use("/chapter", chapterRoute);
 app.use("/lesson", lessonRoute);
