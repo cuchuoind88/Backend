@@ -2,17 +2,22 @@ import lessonModel from "../models/Lesson.js";
 import chapterModel from "../models/Chapter.js";
 const lessonCreate = async (req, res) => {
   try {
-    // const newLesson = new lessonModel(req.body);
-    // await newLesson.save();
-    // await chapterModel.updateOne(
-    //   { _id: newLesson.chapter },
-    //   { $push: { lessons: newLesson._id } }
-    // );
-    // res.status(200).json({
-    //   msg: "Successfully Created A Lesson",
-    //   lesson: newLesson,
-    // });
-    console.log(req.file);
+    const newLesson = new lessonModel({
+      ...req.body,
+      video: `http://192.168.213.165/hls/${
+        req.file.filename.split(".")[0]
+      }.m3u8`,
+    });
+    await newLesson.save();
+    await chapterModel.updateOne(
+      { _id: newLesson.chapter },
+      { $push: { lessons: newLesson._id } }
+    );
+    res.status(200).json({
+      msg: "Successfully Created A Lesson",
+      lesson: newLesson,
+    });
+    console.log(req.file.filename.split(".")[0]);
     console.log(req.body);
   } catch (err) {
     console.log(err);
